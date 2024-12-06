@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
-import { 
-  saveJob as saveJobToFirebase,
-  removeJob as removeJobFromFirebase,
-  getSavedJobs as getSavedJobsFromFirebase,
-  markJobAsApplied as markJobAsAppliedInFirebase,
-  markJobAsNotApplied as markJobAsNotAppliedInFirebase,
-  isJobSaved as checkJobSaved
-} from '../services/jobs';
-import type { Job, SavedJob } from '../types';
-import { useAuth } from './useAuth';
+import { useState, useEffect } from "react";
+import {
+  saveJob as saveJobToApi,
+  removeJob as removeJobFromApi,
+  getSavedJobs as getSavedJobsFromApi,
+  updateJobAppliedStatus,
+} from "../services/api";
+import type { Job, SavedJob } from "../types";
+import { useAuth } from "./useAuth";
 
 export function useSavedJobs() {
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
@@ -24,10 +22,10 @@ export function useSavedJobs() {
       }
 
       try {
-        const jobs = await getSavedJobsFromFirebase(user.uid);
+        const jobs = await getSavedJobsFromApi(user.uid);
         setSavedJobs(jobs);
       } catch (error) {
-        console.error('Error loading saved jobs:', error);
+        console.error("Error loading saved jobs:", error);
       } finally {
         setLoading(false);
       }
@@ -40,63 +38,54 @@ export function useSavedJobs() {
     if (!user) return;
 
     try {
-      // Check if already saved first
-      const alreadySaved = await checkJobSaved(job.id, user.uid);
-      if (alreadySaved) {
-        return;
-      }
-
-      const savedJobId = await saveJobToFirebase(job, user.uid);
-      const savedJob: SavedJob = {
-        ...job,
-        id: savedJobId,
-        originalJobId: job.id,
-        savedAt: new Date().toISOString()
-      };
-      
-      setSavedJobs(prev => [...prev, savedJob]);
+      const savedJob = await saveJobToApi(job, user.uid);
+      setSavedJobs((prev) => [...prev, savedJob]);
     } catch (error) {
-      console.error('Error saving job:', error);
+      console.error("Error saving job:", error);
+      throw error;
     }
   };
 
   const removeJob = async (jobId: string) => {
     try {
-      await removeJobFromFirebase(jobId);
-      setSavedJobs(prev => prev.filter(job => job.id !== jobId));
+      await removeJobFromApi(jobId);
+      setSavedJobs((prev) => prev.filter((job) => job.id !== jobId));
     } catch (error) {
-      console.error('Error removing job:', error);
+      console.error("Error removing job:", error);
+      throw error;
     }
   };
 
   const markAsApplied = async (jobId: string) => {
     try {
-      await markJobAsAppliedInFirebase(jobId);
-      setSavedJobs(prev => prev.map(job => 
-        job.id === jobId
-          ? { ...job, appliedAt: new Date().toISOString() }
-          : job
-      ));
+      const result = await updateJobAppliedStatus(jobId, true);
+      setSavedJobs((prev) =>
+        prev.map((job) =>
+          job.id === jobId ? { ...job, appliedAt: result.appliedAt } : job
+        )
+      );
     } catch (error) {
-      console.error('Error marking job as applied:', error);
+      console.error("Error marking job as applied:", error);
+      throw error;
     }
   };
 
   const markAsNotApplied = async (jobId: string) => {
     try {
-      await markJobAsNotAppliedInFirebase(jobId);
-      setSavedJobs(prev => prev.map(job => 
-        job.id === jobId
-          ? { ...job, appliedAt: undefined }
-          : job
-      ));
+      const result = await updateJobAppliedStatus(jobId, false);
+      setSavedJobs((prev) =>
+        prev.map((job) =>
+          job.id === jobId ? { ...job, appliedAt: result.appliedAt } : job
+        )
+      );
     } catch (error) {
-      console.error('Error marking job as not applied:', error);
+      console.error("Error marking job as not applied:", error);
+      throw error;
     }
   };
 
   const isJobSaved = (jobId: string) => {
-    return savedJobs.some(job => job.originalJobId === jobId);
+    return savedJobs.some((job) => job.originalJobId === jobId);
   };
 
   return {
