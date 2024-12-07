@@ -96,6 +96,31 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Mark job as saved and assign user
+router.put("/saved", async (req, res) => {
+  try {
+    const { jobId, userId, saved } = req.body;
+    const jobRef = doc(db, JOBS_COLLECTION, jobId);
+
+    const updateData = {
+      userId: userId,
+      isSaved: saved,
+      savedAt: saved ? serverTimestamp() : null,
+    };
+
+    await updateDoc(jobRef, updateData);
+
+    res.json({
+      id: jobId,
+      isSaved: saved,
+      savedAt: saved ? new Date().toISOString() : null,
+      userId: userId,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating job saved status", error });
+  }
+});
+
 // Analyze jobs and save them to database
 router.post("/analyze", upload.single("resume"), async (req, res) => {
   try {

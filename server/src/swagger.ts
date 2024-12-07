@@ -168,6 +168,46 @@ const swaggerDocument: OpenAPIV3.Document = {
         },
       },
     },
+    "/api/jobs/saved": {
+      put: {
+        tags: ["Jobs"],
+        summary: "Mark a job as saved and assign it to a user",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["jobId", "userId", "saved"],
+                properties: {
+                  jobId: { type: "string" },
+                  userId: { type: "string" },
+                  saved: { type: "boolean" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Job saved status updated successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    isSaved: { type: "boolean" },
+                    savedAt: { type: "string" },
+                    userId: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {
