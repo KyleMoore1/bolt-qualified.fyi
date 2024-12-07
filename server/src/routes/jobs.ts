@@ -126,7 +126,6 @@ router.put("/:id/saved", async (req, res) => {
 // Analyze jobs and save them to database
 router.post("/analyze", upload.single("resume"), async (req, res) => {
   try {
-    console.log(req);
     if (!req.file || !req.body.jobUrls) {
       return res
         .status(400)
@@ -163,7 +162,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
       });
     }
 
-    res.json(savedJobs);
+    res.json({ jobs: savedJobs });
   } catch (error) {
     console.error("Error in /analyze:", error);
     res.status(500).json({ message: "Error analyzing jobs", error });

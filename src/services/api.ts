@@ -61,9 +61,13 @@ export async function analyzeJobMatches(
   jobUrls: string[],
   resumeFile: File
 ): Promise<MatchResult> {
+  const formData = new FormData();
+  formData.append("resume", resumeFile);
+  jobUrls.forEach((url) => formData.append("jobUrls", url));
+
   const response = await fetch(`${API_BASE_URL}/jobs/analyze`, {
     method: "POST",
-    body: JSON.stringify({ jobUrls, resumeFile }),
+    body: formData,
   });
 
   if (!response.ok) {

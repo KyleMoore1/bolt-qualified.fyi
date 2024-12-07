@@ -1,16 +1,14 @@
-import React from 'react';
-import { JobCard } from './JobCard';
-import { useAuth } from '../hooks/useAuth';
-import type { Job } from '../types';
+import { JobCard } from "./JobCard";
+import { useAuth } from "../hooks/useAuth";
+import type { Job } from "../types";
 
 interface ResultsProps {
   jobs: Job[];
-  savedJobIds: string[];
   onToggleSave: (job: Job) => void;
   loading?: boolean;
 }
 
-export function Results({ jobs, savedJobIds, onToggleSave, loading }: ResultsProps) {
+export function Results({ jobs, onToggleSave, loading }: ResultsProps) {
   const { user } = useAuth();
 
   if (loading) {
@@ -33,7 +31,7 @@ export function Results({ jobs, savedJobIds, onToggleSave, loading }: ResultsPro
       )}
       <div className="divide-y divide-gray-200">
         {jobs.map((job) => {
-          const isSaved = savedJobIds.some(id => id === job.id);
+          const isSaved = job.isSaved;
           return (
             <JobCard
               key={job.id}

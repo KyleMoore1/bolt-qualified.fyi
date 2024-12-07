@@ -159,7 +159,6 @@ function App() {
                 {activeTab === "results" && results && (
                   <Results
                     jobs={results.jobs}
-                    savedJobIds={savedJobs.map((job) => job.originalJobId)}
                     onToggleSave={saveJob}
                     loading={savedJobsLoading}
                   />
