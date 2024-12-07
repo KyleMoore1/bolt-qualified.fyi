@@ -11,7 +11,7 @@ import { useSavedJobs } from "./hooks/useSavedJobs";
 import { useAuth } from "./hooks/useAuth";
 import { ERROR_MESSAGES } from "./constants";
 import type { MatchResult, TabId } from "./types";
-import { analyzeJobMatches } from "./services/mockApi";
+import { analyzeJobMatches } from "./services/api";
 
 function App() {
   const [resume, setResume] = useState<File | null>(null);

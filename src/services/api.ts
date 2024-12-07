@@ -1,3 +1,5 @@
+import { MatchResult } from "../types";
+
 export const API_BASE_URL = "http://localhost:5000/api";
 
 export async function saveJob(job: Job, userId: string): Promise<SavedJob> {
@@ -50,6 +52,22 @@ export async function updateJobAppliedStatus(
 
   if (!response.ok) {
     throw new Error("Failed to update job status");
+  }
+
+  return response.json();
+}
+
+export async function analyzeJobMatches(
+  jobUrls: string[],
+  resumeFile: File
+): Promise<MatchResult> {
+  const response = await fetch(`${API_BASE_URL}/jobs/analyze`, {
+    method: "POST",
+    body: JSON.stringify({ jobUrls, resumeFile }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to analyze job matches");
   }
 
   return response.json();
