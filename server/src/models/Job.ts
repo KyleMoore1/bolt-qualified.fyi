@@ -1,5 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -27,8 +30,7 @@ export interface Job {
   keySkillMatches: string[];
 
   // Tracking fields
-  originalJobId: string;
   createdAt: Date;
-  savedAt: Date;
-  appliedAt: Date;
+  isApplied: boolean;
+  appliedAt: Date | null;
 }
