@@ -100,25 +100,34 @@ router.delete("/:id", async (req, res) => {
 // Mark job as saved and assign user
 router.put("/:id/saved", async (req, res) => {
   try {
+    console.log("Saving job - Request params:", req.params);
+    console.log("Saving job - Request body:", req.body);
+
     const jobId = req.params.id;
-    const { userId, saved } = req.body;
+    const { userId, isSaved } = req.body;
     const jobRef = doc(db, JOBS_COLLECTION, jobId);
 
     const updateData = {
       userId: userId,
-      isSaved: saved,
-      savedAt: saved ? serverTimestamp() : null,
+      isSaved: isSaved,
+      savedAt: isSaved ? serverTimestamp() : null,
     };
+    console.log("Saving job - Update data:", updateData);
 
     await updateDoc(jobRef, updateData);
+    console.log("Job successfully updated in database");
 
-    res.json({
+    const response = {
       id: jobId,
-      isSaved: saved,
-      savedAt: saved ? new Date().toISOString() : null,
+      isSaved: isSaved,
+      savedAt: isSaved ? new Date().toISOString() : null,
       userId: userId,
-    });
+    };
+    console.log("Sending response:", response);
+
+    res.json(response);
   } catch (error) {
+    console.error("Error saving job:", error);
     res.status(500).json({ message: "Error updating job saved status", error });
   }
 });
