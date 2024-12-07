@@ -41,32 +41,6 @@ const upload = multer({
   },
 });
 
-// Save a job
-router.post("/", async (req, res) => {
-  try {
-    const jobData = {
-      ...req.body,
-      createdAt: serverTimestamp(),
-      isApplied: false,
-      appliedAt: null,
-    };
-
-    console.log("jobData");
-    console.log(jobData);
-
-    const docRef = await addDoc(collection(db, JOBS_COLLECTION), jobData);
-    const savedDoc = {
-      id: docRef.id,
-      ...jobData,
-      createdAt: new Date().toISOString(), //only for client response
-    };
-
-    res.status(201).json(savedDoc);
-  } catch (error) {
-    res.status(500).json({ message: "Error saving job", error });
-  }
-});
-
 // Mark job as applied/not applied
 router.put("/:id/applied", async (req, res) => {
   try {
@@ -125,6 +99,7 @@ router.delete("/:id", async (req, res) => {
 // Analyze jobs and save them to database
 router.post("/analyze", upload.single("resume"), async (req, res) => {
   try {
+    console.log(req);
     if (!req.file || !req.body.jobUrls) {
       return res
         .status(400)

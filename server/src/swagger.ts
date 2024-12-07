@@ -14,47 +14,6 @@ const swaggerDocument: OpenAPIV3.Document = {
     },
   ],
   paths: {
-    "/api/jobs/": {
-      post: {
-        tags: ["Jobs"],
-        summary: "Save a new job",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["userId", "title", "company", "url"],
-                properties: {
-                  userId: { type: "string" },
-                  title: { type: "string" },
-                  company: { type: "string" },
-                  url: { type: "string" },
-                  aiAnalysis: { type: "string" },
-                  matchScore: { type: "number" },
-                  keySkillMatches: {
-                    type: "array",
-                    items: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          "201": {
-            description: "Job saved successfully",
-            content: {
-              "application/json": {
-                schema: {
-                  $ref: "#/components/schemas/Job",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
     "/api/jobs/{id}": {
       delete: {
         tags: ["Jobs"],
