@@ -81,6 +81,7 @@ router.get("/user/:userId", async (req, res) => {
 
     res.json(jobs);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error fetching jobs", error });
   }
 });
@@ -97,9 +98,10 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Mark job as saved and assign user
-router.put("/saved", async (req, res) => {
+router.put("/:id/saved", async (req, res) => {
   try {
-    const { jobId, userId, saved } = req.body;
+    const jobId = req.params.id;
+    const { userId, saved } = req.body;
     const jobRef = doc(db, JOBS_COLLECTION, jobId);
 
     const updateData = {
