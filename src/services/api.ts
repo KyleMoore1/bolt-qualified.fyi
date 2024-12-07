@@ -1,14 +1,18 @@
 import { MatchResult } from "../types";
+import { Job } from "../types";
 
 export const API_BASE_URL = "http://localhost:5000/api";
 
-export async function saveJob(job: Job, userId: string): Promise<SavedJob> {
-  const response = await fetch(`${API_BASE_URL}/jobs/save`, {
-    method: "POST",
+export async function saveJob(job: Job, userId: string): Promise<Job> {
+  const response = await fetch(`${API_BASE_URL}/jobs/${job.id}/saved`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...job, userId }),
+    body: JSON.stringify({
+      userId: userId,
+      isSaved: true,
+    }),
   });
 
   if (!response.ok) {
@@ -28,7 +32,7 @@ export async function removeJob(jobId: string): Promise<void> {
   }
 }
 
-export async function getSavedJobs(userId: string): Promise<SavedJob[]> {
+export async function getSavedJobs(userId: string): Promise<Job[]> {
   const response = await fetch(`${API_BASE_URL}/jobs/user/${userId}`);
 
   if (!response.ok) {
