@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { db } from "../models/Job.js";
-import type { Job } from "../models/Job.js";
 import {
   collection,
   addDoc,
@@ -161,7 +160,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
 
     if (!req.file || !req.body.jobUrls) {
       console.log("Missing required fields");
-      return res
+      res
         .status(400)
         .json({ message: "Resume file and job URLs are required" });
     }
@@ -185,7 +184,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
       );
     } catch (error) {
       console.error("Error converting resume:", error);
-      return res.status(500).json({ message: "Error processing resume file" });
+      res.status(500).json({ message: "Error processing resume file" });
     }
 
     // Handle multiple jobUrls form fields
@@ -231,7 +230,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
       });
     }
 
-    return res.json({ jobs: savedJobs });
+    res.json({ jobs: savedJobs });
   } catch (error) {
     console.error("Error in /analyze:", error);
     res.status(500).json({ message: "Error analyzing jobs", error });
