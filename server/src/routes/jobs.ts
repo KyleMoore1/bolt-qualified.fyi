@@ -152,8 +152,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
       mimetype: req?.file?.mimetype,
       size: req?.file?.size,
     });
-    console.log("Job URLs (raw):", req.body.jobUrls);
-    console.log("Job URLs type:", typeof req.body.jobUrls);
+    console.log("Job URLs:", req.body.jobUrls);
 
     if (!req.file || !req.body.jobUrls) {
       console.log("Missing required fields");

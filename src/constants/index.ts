@@ -10,6 +10,7 @@ export const ERROR_MESSAGES = {
     "Invalid file type. Please upload a PDF, DOC, or DOCX file",
   NO_JOBS_PROVIDED: "Please provide at least one job URL",
   INVALID_URLS: "One or more URLs are invalid",
+  URLS_NOT_ONE_PER_LINE: "Please enter each URL on a new line",
   API_TIMEOUT: "Request timed out. Please try again",
   GENERIC_ERROR: "An error occurred. Please try again",
 };

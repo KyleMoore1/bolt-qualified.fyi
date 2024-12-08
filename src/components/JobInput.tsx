@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button } from './ui/Button';
-import { Card } from './ui/Card';
-import { validateUrls } from '../utils/validation';
-import { ERROR_MESSAGES } from '../constants';
+import React from "react";
+import { Button } from "./ui/Button";
+import { Card } from "./ui/Card";
+import { validateUrls, isOneUrlPerLine } from "../utils/validation";
+import { ERROR_MESSAGES } from "../constants";
 
 interface JobInputProps {
   onJobsSubmit: (jobs: string[]) => void;
@@ -10,15 +10,23 @@ interface JobInputProps {
 }
 
 export function JobInput({ onJobsSubmit, isLoading }: JobInputProps) {
-  const [jobList, setJobList] = React.useState('');
-  const [error, setError] = React.useState('');
+  const [jobList, setJobList] = React.useState("");
+  const [error, setError] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    const urls = jobList.split('\n').map(url => url.trim()).filter(Boolean);
-    
+    if (!isOneUrlPerLine(jobList)) {
+      setError(ERROR_MESSAGES.URLS_NOT_ONE_PER_LINE);
+      return;
+    }
+
+    const urls = jobList
+      .split("\n")
+      .map((url) => url.trim())
+      .filter(Boolean);
+
     if (urls.length === 0) {
       setError(ERROR_MESSAGES.NO_JOBS_PROVIDED);
       return;
@@ -37,7 +45,10 @@ export function JobInput({ onJobsSubmit, isLoading }: JobInputProps) {
     <Card>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="jobs" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="jobs"
+            className="block text-sm font-medium text-gray-700"
+          >
             Paste Job URLs (one per line)
           </label>
           <textarea
@@ -48,18 +59,12 @@ export function JobInput({ onJobsSubmit, isLoading }: JobInputProps) {
             value={jobList}
             onChange={(e) => {
               setJobList(e.target.value);
-              setError('');
+              setError("");
             }}
           />
-          {error && (
-            <p className="mt-2 text-sm text-red-600">{error}</p>
-          )}
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
-        <Button
-          type="submit"
-          isLoading={isLoading}
-          disabled={!jobList.trim()}
-        >
+        <Button type="submit" isLoading={isLoading} disabled={!jobList.trim()}>
           Analyze Jobs
         </Button>
       </form>
