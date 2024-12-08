@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "tsx server/src/index.ts",
-    "start:dev": "tsx watch server/src/index.ts"
+    "server": "tsx server/src/index.ts",
+    "server:dev": "tsx watch server/src/index.ts"
   },
   "dependencies": {
     "@mendable/firecrawl-js": "^1.9.1",
