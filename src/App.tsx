@@ -10,7 +10,7 @@ import { Card } from "./components/ui/Card";
 import { useSavedJobs } from "./hooks/useSavedJobs";
 import { useAuth } from "./hooks/useAuth";
 import { ERROR_MESSAGES } from "./constants";
-import type { MatchResult, TabId } from "./types";
+import type { MatchResult, TabId, Job } from "./types";
 import { analyzeJobMatches } from "./services/api";
 
 function App() {
@@ -68,6 +68,30 @@ function App() {
 
   const handleViewSavedJobs = () => {
     setActiveTab("saved");
+  };
+
+  const handleSaveJob = async (job: Job) => {
+    if (job.isSaved) {
+      await saveJob(job, user?.uid || "", false);
+      if (results) {
+        setResults({
+          ...results,
+          jobs: results.jobs.map((j) =>
+            j.id === job.id ? { ...j, isSaved: false } : j
+          ),
+        });
+      }
+    } else {
+      await saveJob(job, user?.uid || "", true);
+      if (results) {
+        setResults({
+          ...results,
+          jobs: results.jobs.map((j) =>
+            j.id === job.id ? { ...j, isSaved: true } : j
+          ),
+        });
+      }
+    }
   };
 
   return (
@@ -159,7 +183,7 @@ function App() {
                 {activeTab === "results" && results && (
                   <Results
                     jobs={results.jobs}
-                    onToggleSave={saveJob}
+                    onToggleSave={handleSaveJob}
                     loading={savedJobsLoading}
                   />
                 )}

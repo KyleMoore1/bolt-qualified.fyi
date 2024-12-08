@@ -3,7 +3,11 @@ import { Job } from "../types";
 
 export const API_BASE_URL = "http://localhost:5000/api";
 
-export async function saveJob(job: Job, userId: string): Promise<Job> {
+export async function saveJob(
+  job: Job,
+  userId: string,
+  isSaved: boolean = true
+): Promise<Job> {
   const response = await fetch(`${API_BASE_URL}/jobs/${job.id}/saved`, {
     method: "PUT",
     headers: {
@@ -11,12 +15,12 @@ export async function saveJob(job: Job, userId: string): Promise<Job> {
     },
     body: JSON.stringify({
       userId: userId,
-      isSaved: true,
+      isSaved: isSaved,
     }),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to save job");
+    throw new Error("Failed to update job saved status");
   }
 
   return response.json();

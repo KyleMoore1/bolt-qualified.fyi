@@ -12,6 +12,7 @@ import {
   orderBy,
   serverTimestamp,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import multer from "multer";
 
@@ -115,13 +116,24 @@ router.put("/:id/saved", async (req, res) => {
     console.log("Saving job - Update data:", updateData);
 
     await updateDoc(jobRef, updateData);
+    const updatedDoc = await getDoc(jobRef);
+    const updatedData = updatedDoc.data();
     console.log("Job successfully updated in database");
 
     const response = {
       id: jobId,
-      isSaved: isSaved,
-      savedAt: isSaved ? new Date().toISOString() : null,
-      userId: userId,
+      title: updatedData.title,
+      company: updatedData.company,
+      url: updatedData.url,
+      matchScore: updatedData.matchScore,
+      keySkillMatches: updatedData.keySkillMatches,
+      aiAnalysis: updatedData.aiAnalysis,
+      createdAt: updatedData.createdAt?.toDate().toISOString(),
+      userId: updatedData.userId,
+      isApplied: updatedData.isApplied,
+      appliedAt: updatedData.appliedAt?.toDate()?.toISOString() || null,
+      isSaved: updatedData.isSaved,
+      savedAt: updatedData.savedAt?.toDate()?.toISOString() || null,
     };
     console.log("Sending response:", response);
 

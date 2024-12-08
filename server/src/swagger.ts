@@ -189,10 +189,10 @@ const swaggerDocument: OpenAPIV3.Document = {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["userId", "saved"],
+                required: ["userId", "isSaved"],
                 properties: {
                   userId: { type: "string" },
-                  saved: { type: "boolean" },
+                  isSaved: { type: "boolean" },
                 },
               },
             },
@@ -207,9 +207,33 @@ const swaggerDocument: OpenAPIV3.Document = {
                   type: "object",
                   properties: {
                     id: { type: "string" },
-                    isSaved: { type: "boolean" },
-                    savedAt: { type: "string" },
+                    title: { type: "string" },
+                    company: { type: "string" },
+                    url: { type: "string" },
+                    matchScore: { type: "number" },
+                    keySkillMatches: {
+                      type: "array",
+                      items: { type: "string" },
+                    },
+                    aiAnalysis: { type: "string" },
+                    createdAt: {
+                      type: "string",
+                      format: "date-time",
+                      nullable: true,
+                    },
                     userId: { type: "string" },
+                    isApplied: { type: "boolean" },
+                    appliedAt: {
+                      type: "string",
+                      format: "date-time",
+                      nullable: true,
+                    },
+                    isSaved: { type: "boolean" },
+                    savedAt: {
+                      type: "string",
+                      format: "date-time",
+                      nullable: true,
+                    },
                   },
                 },
               },

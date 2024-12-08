@@ -5,11 +5,11 @@ import {
   getSavedJobs as getSavedJobsFromApi,
   updateJobAppliedStatus,
 } from "../services/api";
-import type { Job, SavedJob } from "../types";
+import type { Job } from "../types";
 import { useAuth } from "./useAuth";
 
 export function useSavedJobs() {
-  const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
+  const [savedJobs, setSavedJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -34,12 +34,16 @@ export function useSavedJobs() {
     loadSavedJobs();
   }, [user]);
 
-  const saveJob = async (job: Job) => {
+  const saveJob = async (job: Job, userId: string, isSaved: boolean = true) => {
     if (!user) return;
 
     try {
-      const savedJob = await saveJobToApi(job, user.uid);
-      setSavedJobs((prev) => [...prev, savedJob]);
+      const savedJob = await saveJobToApi(job, userId, isSaved);
+      if (isSaved) {
+        setSavedJobs((prev) => [...prev, savedJob]);
+      } else {
+        setSavedJobs((prev) => prev.filter((j) => j.id !== job.id));
+      }
     } catch (error) {
       console.error("Error saving job:", error);
       throw error;
@@ -61,7 +65,9 @@ export function useSavedJobs() {
       const result = await updateJobAppliedStatus(jobId, true);
       setSavedJobs((prev) =>
         prev.map((job) =>
-          job.id === jobId ? { ...job, appliedAt: result.appliedAt } : job
+          job.id === jobId
+            ? { ...job, isApplied: true, appliedAt: result.appliedAt }
+            : job
         )
       );
     } catch (error) {
@@ -75,7 +81,7 @@ export function useSavedJobs() {
       const result = await updateJobAppliedStatus(jobId, false);
       setSavedJobs((prev) =>
         prev.map((job) =>
-          job.id === jobId ? { ...job, appliedAt: result.appliedAt } : job
+          job.id === jobId ? { ...job, isApplied: false, appliedAt: null } : job
         )
       );
     } catch (error) {
@@ -85,7 +91,7 @@ export function useSavedJobs() {
   };
 
   const isJobSaved = (jobId: string) => {
-    return savedJobs.some((job) => job.originalJobId === jobId);
+    return savedJobs.some((job) => job.id === jobId);
   };
 
   return {

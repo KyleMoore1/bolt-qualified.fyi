@@ -1,16 +1,20 @@
-import React from 'react';
-import { JobCard } from './JobCard';
-import { organizeJobsByPriority } from '../utils/jobUtils';
-import type { SavedJob } from '../types';
+import { JobCard } from "./JobCard";
+import { organizeJobsByPriority } from "../utils/jobUtils";
+import type { Job } from "../types";
 
 interface SavedJobsProps {
-  jobs: SavedJob[];
+  jobs: Job[];
   onRemoveJob: (jobId: string) => void;
   onToggleApplied: (jobId: string) => void;
   loading?: boolean;
 }
 
-export function SavedJobs({ jobs, onRemoveJob, onToggleApplied, loading }: SavedJobsProps) {
+export function SavedJobs({
+  jobs,
+  onRemoveJob,
+  onToggleApplied,
+  loading,
+}: SavedJobsProps) {
   if (loading) {
     return (
       <div className="text-center py-12">
@@ -19,6 +23,8 @@ export function SavedJobs({ jobs, onRemoveJob, onToggleApplied, loading }: Saved
       </div>
     );
   }
+
+  console.log("Jobs:", jobs);
 
   const jobGroups = organizeJobsByPriority(jobs);
 

@@ -1,13 +1,13 @@
-import React from 'react';
-import { Card } from './ui/Card';
-import { JobActions } from './job/JobActions';
-import { JobMatchScore } from './job/JobMatchScore';
-import { JobSkills } from './job/JobSkills';
-import { JobAnalysis } from './job/JobAnalysis';
-import type { Job, SavedJob } from '../types';
+import React from "react";
+import { Card } from "./ui/Card";
+import { JobActions } from "./job/JobActions";
+import { JobMatchScore } from "./job/JobMatchScore";
+import { JobSkills } from "./job/JobSkills";
+import { JobAnalysis } from "./job/JobAnalysis";
+import type { Job } from "../types";
 
 interface JobCardProps {
-  job: Job | SavedJob;
+  job: Job;
   isSaved: boolean;
   onToggleSave: () => void;
   onToggleApplied?: () => void;
@@ -21,7 +21,7 @@ export function JobCard({
   onToggleSave,
   onToggleApplied,
   isApplied,
-  requiresAuth
+  requiresAuth,
 }: JobCardProps) {
   return (
     <Card className="group hover:bg-gray-50/50 transition-all duration-200">
