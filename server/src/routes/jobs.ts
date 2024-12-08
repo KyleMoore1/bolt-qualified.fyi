@@ -64,6 +64,7 @@ router.put("/:id/applied", async (req, res) => {
 // Get jobs for user
 router.get("/user/:userId", async (req, res) => {
   try {
+    console.log("Getting jobs for user:", req.params.userId);
     const jobsQuery = query(
       collection(db, JOBS_COLLECTION),
       where("userId", "==", req.params.userId),

@@ -9,8 +9,8 @@ const swaggerDocument: OpenAPIV3.Document = {
   },
   servers: [
     {
-      url: process.env.API_URL || "http://localhost:5000",
-      description: process.env.API_URL
+      url: process.env.VITE_API_URL || "http://localhost:5000",
+      description: process.env.VITE_API_URL
         ? "Production server"
         : "Development server",
     },
