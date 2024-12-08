@@ -1,6 +1,6 @@
-import type { Job } from "../models/Job.js";
 import OpenAI from "openai";
 import FirecrawlApp from "@mendable/firecrawl-js";
+import type { ErrorResponse } from "@mendable/firecrawl-js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -37,7 +37,9 @@ export async function analyze(
     });
 
     if (!batchScrapeResponse.success) {
-      throw new Error(`Failed to scrape: ${batchScrapeResponse.error}`);
+      // Type guard to check if it's an ErrorResponse
+      const errorResponse = batchScrapeResponse as ErrorResponse;
+      throw new Error(`Failed to scrape: ${errorResponse.error}`);
     }
 
     // Create jobs array with URLs and descriptions
