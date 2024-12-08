@@ -103,7 +103,7 @@ function App() {
           <Card className="mb-8">
             <div className="max-w-3xl">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Find Your Perfect Job Match
+                Find Your Perfect SWE Job Match
               </h2>
               <p className="text-gray-600">
                 Let AI analyze your resume against job listings to find the best
