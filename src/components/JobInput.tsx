@@ -54,7 +54,7 @@ export function JobInput({ onJobsSubmit, isLoading }: JobInputProps) {
           <textarea
             id="jobs"
             rows={6}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border border-gray-200 outline-none focus:outline-none focus:ring-0 focus:border-gray-200 sm:text-sm"
             placeholder="https://example.com/job1&#10;https://example.com/job2"
             value={jobList}
             onChange={(e) => {
