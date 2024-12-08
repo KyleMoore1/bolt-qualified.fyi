@@ -117,22 +117,27 @@ router.put("/:id/saved", async (req, res) => {
     await updateDoc(jobRef, updateData);
     const updatedDoc = await getDoc(jobRef);
     const updatedData = updatedDoc.data();
-    console.log("Job successfully updated in database");
+
+    if (!updatedData) {
+      throw new Error("Failed to fetch updated job data");
+    }
 
     const response = {
       id: jobId,
-      title: updatedData.title,
-      company: updatedData.company,
-      url: updatedData.url,
-      matchScore: updatedData.matchScore,
-      keySkillMatches: updatedData.keySkillMatches,
-      aiAnalysis: updatedData.aiAnalysis,
-      createdAt: updatedData.createdAt?.toDate().toISOString(),
-      userId: updatedData.userId,
-      isApplied: updatedData.isApplied,
-      appliedAt: updatedData.appliedAt?.toDate()?.toISOString() || null,
-      isSaved: updatedData.isSaved,
-      savedAt: updatedData.savedAt?.toDate()?.toISOString() || null,
+      title: updatedData.title ?? "",
+      company: updatedData.company ?? "",
+      url: updatedData.url ?? "",
+      matchScore: updatedData.matchScore ?? 0,
+      keySkillMatches: updatedData.keySkillMatches ?? [],
+      aiAnalysis: updatedData.aiAnalysis ?? "",
+      createdAt:
+        updatedData.createdAt?.toDate().toISOString() ??
+        new Date().toISOString(),
+      userId: updatedData.userId ?? null,
+      isApplied: updatedData.isApplied ?? false,
+      appliedAt: updatedData.appliedAt?.toDate()?.toISOString() ?? null,
+      isSaved: updatedData.isSaved ?? false,
+      savedAt: updatedData.savedAt?.toDate()?.toISOString() ?? null,
     };
     console.log("Sending response:", response);
 
@@ -190,8 +195,8 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
 
     // Clean up URLs
     const cleanedUrls = jobUrls
-      .map((url) => url.trim())
-      .filter((url) => url.length > 0);
+      .map((url: string) => url.trim())
+      .filter((url: string) => url.length > 0);
 
     console.log("Processed URLs:", cleanedUrls);
     console.log(`Processing ${cleanedUrls.length} job URLs`);
