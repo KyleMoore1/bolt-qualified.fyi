@@ -15,6 +15,8 @@ import {
   getDoc,
 } from "firebase/firestore";
 import multer from "multer";
+import { docxToMarkdown, pdfToMarkdown } from "../utils/documentConverter.js";
+import { analyze } from "../lib/jobAnalyzer.js";
 
 const router = Router();
 const JOBS_COLLECTION = "saved_jobs";
@@ -26,18 +28,15 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
-    // Accept pdf, doc, docx files
+    // Accept pdf and docx files only
     const allowedTypes = [
       "application/pdf",
-      "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(
-        new Error("Invalid file type. Please upload PDF, DOC, or DOCX files.")
-      );
+      cb(new Error("Invalid file type. Please upload PDF or DOCX files."));
     }
   },
 });
@@ -147,43 +146,88 @@ router.put("/:id/saved", async (req, res) => {
 // Analyze jobs and save them to database
 router.post("/analyze", upload.single("resume"), async (req, res) => {
   try {
+    console.log("Starting /analyze endpoint");
+    console.log("File details:", {
+      originalname: req?.file?.originalname,
+      mimetype: req?.file?.mimetype,
+      size: req?.file?.size,
+    });
+    console.log("Job URLs (raw):", req.body.jobUrls);
+    console.log("Job URLs type:", typeof req.body.jobUrls);
+
     if (!req.file || !req.body.jobUrls) {
+      console.log("Missing required fields");
       return res
         .status(400)
         .json({ message: "Resume file and job URLs are required" });
     }
 
-    // Split comma-separated URLs into array
-    const jobUrls = req.body.jobUrls.split(",");
+    // Convert resume to markdown based on file type
+    let resumeMarkdown;
+    try {
+      console.log("Starting document conversion...");
+      if (req.file.mimetype === "application/pdf") {
+        console.log("Converting PDF to markdown");
+        resumeMarkdown = await pdfToMarkdown(req.file.buffer);
+      } else {
+        console.log("Converting DOCX to markdown");
+        resumeMarkdown = await docxToMarkdown(req.file.buffer);
+      }
+      console.log("Document conversion successful");
+      console.log("Markdown length:", resumeMarkdown.length);
+      console.log(
+        "First 200 characters of markdown:",
+        resumeMarkdown.substring(0, 200)
+      );
+    } catch (error) {
+      console.error("Error converting resume:", error);
+      return res.status(500).json({ message: "Error processing resume file" });
+    }
 
+    // Handle multiple jobUrls form fields
+    const jobUrls = Array.isArray(req.body.jobUrls)
+      ? req.body.jobUrls
+      : [req.body.jobUrls];
+
+    // Clean up URLs
+    const cleanedUrls = jobUrls
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0);
+
+    console.log("Processed URLs:", cleanedUrls);
+    console.log(`Processing ${cleanedUrls.length} job URLs`);
+
+    const analyzedJobs = await analyze(cleanedUrls, resumeMarkdown);
     const savedJobs = [];
 
-    for (const url of jobUrls) {
-      const jobData = {
-        userId: null,
-        title: "Software Engineer", // mock value
-        company: "Tech Company", // mock value
-        url: url.trim(), // trim whitespace
-        aiAnalysis: "This job appears to be a good match for your skills.", // mock value
-        matchScore: 85, // mock value
-        keySkillMatches: ["JavaScript", "React", "Node.js"], // mock values
+    for (const analyzedJob of analyzedJobs) {
+      // Create a complete job document by adding the required fields
+      const jobDoc = {
+        ...analyzedJob,
         createdAt: serverTimestamp(),
+        userId: null,
         isApplied: false,
         appliedAt: null,
         isSaved: false,
         savedAt: null,
       };
 
-      const docRef = await addDoc(collection(db, JOBS_COLLECTION), jobData);
+      const docRef = await addDoc(collection(db, JOBS_COLLECTION), jobDoc);
 
+      // Format the response with ISO string dates
       savedJobs.push({
         id: docRef.id,
-        ...jobData,
-        createdAt: new Date().toISOString(), // for client response
+        ...analyzedJob,
+        createdAt: new Date().toISOString(),
+        userId: null,
+        isApplied: false,
+        appliedAt: null,
+        isSaved: false,
+        savedAt: null,
       });
     }
 
-    res.json({ jobs: savedJobs });
+    return res.json({ jobs: savedJobs });
   } catch (error) {
     console.error("Error in /analyze:", error);
     res.status(500).json({ message: "Error analyzing jobs", error });

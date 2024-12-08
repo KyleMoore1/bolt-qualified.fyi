@@ -1,23 +1,26 @@
-import React from 'react';
-import { Upload, X } from 'lucide-react';
-import { Card } from './ui/Card';
-import { Button } from './ui/Button';
-import { isValidFileType, isValidFileSize } from '../utils/validation';
-import { ERROR_MESSAGES, ACCEPTED_FILE_TYPES } from '../constants';
+import React from "react";
+import { Upload, X } from "lucide-react";
+import { Card } from "./ui/Card";
+import { Button } from "./ui/Button";
+import { isValidFileType, isValidFileSize } from "../utils/validation";
+import { ERROR_MESSAGES, ACCEPTED_FILE_TYPES } from "../constants";
 
 interface ResumeUploadProps {
   onResumeUpload: (file: File) => void;
   currentFile: File | null;
 }
 
-export function ResumeUpload({ onResumeUpload, currentFile }: ResumeUploadProps) {
-  const [error, setError] = React.useState('');
+export function ResumeUpload({
+  onResumeUpload,
+  currentFile,
+}: ResumeUploadProps) {
+  const [error, setError] = React.useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setError('');
-    
+    setError("");
+
     if (!file) return;
 
     if (!isValidFileType(file)) {
@@ -35,10 +38,10 @@ export function ResumeUpload({ onResumeUpload, currentFile }: ResumeUploadProps)
 
   const handleRemoveFile = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
     onResumeUpload(null as any);
-    setError('');
+    setError("");
   };
 
   return (
@@ -54,17 +57,13 @@ export function ResumeUpload({ onResumeUpload, currentFile }: ResumeUploadProps)
                   ref={fileInputRef}
                   type="file"
                   className="sr-only"
-                  accept={ACCEPTED_FILE_TYPES.join(',')}
+                  accept={ACCEPTED_FILE_TYPES.join(",")}
                   onChange={handleFileChange}
                 />
               </label>
             </div>
-            <p className="text-xs text-gray-500">
-              PDF, DOC, or DOCX up to 10MB
-            </p>
-            {error && (
-              <p className="text-sm text-red-600">{error}</p>
-            )}
+            <p className="text-xs text-gray-500">PDF or DOCX up to 10MB</p>
+            {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
         </div>
       ) : (
