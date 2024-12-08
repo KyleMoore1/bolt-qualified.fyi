@@ -22,7 +22,7 @@ app.use("/api/jobs", jobRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.json({ status1: "ok" });
 });
 
 app.listen(PORT, () => {
