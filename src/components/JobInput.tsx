@@ -49,7 +49,7 @@ export function JobInput({ onJobsSubmit, isLoading }: JobInputProps) {
             htmlFor="jobs"
             className="block text-sm font-medium text-gray-700"
           >
-            Paste Job URLs (one per line)
+            Paste URLs to Job Descriptions (one per line)
           </label>
           <textarea
             id="jobs"
